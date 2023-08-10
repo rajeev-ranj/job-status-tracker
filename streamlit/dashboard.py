@@ -1,36 +1,37 @@
 import streamlit as st
 import requests
 
-# URL of the backend API
-API_URL = "http://localhost:8080"
+def display_dashboard():
+    st.subheader("Central Dashboard")
 
-def show_dashboard():
-    st.title("Central Dashboard")
-    st.write("Here you can view all the jobs and their history for the last few days.")
-
-    # Fetching the jobs from the backend
-    response = requests.get(f"{API_URL}/jobs")
+    # Fetch all jobs
+    response = requests.get("http://localhost:8080/jobs")
     if response.status_code == 200:
         jobs = response.json()
-        display_jobs(jobs)
     else:
-        st.error("Failed to fetch jobs from the backend.")
+        st.error("Failed to fetch jobs.")
+        return
 
-def display_jobs(jobs):
-    # Displaying the jobs in a table
-    st.write("### Jobs Overview")
-    st.table(jobs)
+    # Display all jobs in a table
+    st.write("All Jobs:")
+    st.write(jobs)
 
-    # Displaying the history for each job
-    for job in jobs:
-        st.write(f"### Job: {job['name']}")
-        display_job_history(job['id'])
+    # Allow the user to select a job to view its history
+    job_id = st.selectbox("Select a job to view its history:", [job['job_id'] for job in jobs])
+    display_job_history(job_id)
 
 def display_job_history(job_id):
-    # Fetching the job history from the backend
-    response = requests.get(f"{API_URL}/jobs/{job_id}/history")
+    # Fetch the history for the selected job
+    response = requests.get(f"http://localhost:8080/jobs/{job_id}/history")
     if response.status_code == 200:
         history = response.json()
-        st.table(history)
     else:
-        st.error(f"Failed to fetch history for job ID {job_id}.")
+        st.error(f"Failed to fetch history for job {job_id}.")
+        return
+
+    # Display the job history
+    st.write(f"History for Job {job_id}:")
+    st.write(history)
+
+    # Additional code to visualize the history, e.g., using charts or graphs
+    # ...

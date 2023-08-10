@@ -248,3 +248,17 @@ func DeleteUserHandler(db *database.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+// GetJobHistoryHandler retrieves the history of a specific job by its ID.
+func GetJobHistoryHandler(db *database.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		jobID, _ := strconv.Atoi(chi.URLParam(r, "job_id"))
+		history, err := db.GetJobHistory(jobID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		json.NewEncoder(w).Encode(history)
+	}
+}

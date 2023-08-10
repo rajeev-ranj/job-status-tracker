@@ -94,27 +94,26 @@ func (db *DB) GetJobsByServiceID(serviceID int) ([]*Job, error) {
 	return jobs, nil
 }
 
-// GetJobHistory retrieves all job history for a job
-func (db *DB) GetJobHistory(jobID int) ([]*JobHistory, error) {
-	query := `SELECT job_history_id, job_id, status, start_time, end_time FROM job_history WHERE job_id = $1`
-	rows, err := db.Query(query, jobID)
+// GetJobHistory retrieves the history of a specific job by its ID.
+func (db *DB) GetJobHistory(jobID int) ([]JobHistory, error) {
+	rows, err := db.Query(`SELECT id, job_id, status, timestamp, description FROM job_history WHERE job_id = $1 ORDER BY timestamp DESC`, jobID)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving job history: %w", err)
+		return nil, fmt.Errorf("error querying job history: %w", err)
 	}
 	defer rows.Close()
 
-	var jobHistory []*JobHistory
+	var history []JobHistory
 	for rows.Next() {
-		var history JobHistory
-		if err := rows.Scan(&history.JobHistoryID, &history.JobID, &history.Status, &history.StartTime, &history.EndTime); err != nil {
-			return nil, fmt.Errorf("error scanning job history: %w", err)
+		var record JobHistory
+		if err := rows.Scan(&record.ID, &record.JobID, &record.Status, &record.Timestamp, &record.Description); err != nil {
+			return nil, fmt.Errorf("error scanning job history row: %w", err)
 		}
-		jobHistory = append(jobHistory, &history)
+		history = append(history, record)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating job history: %w", err)
+		return nil, fmt.Errorf("error iterating through job history rows: %w", err)
 	}
 
-	return jobHistory, nil
+	return history, nil
 }

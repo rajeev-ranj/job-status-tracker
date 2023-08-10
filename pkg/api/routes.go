@@ -29,6 +29,7 @@ func Routes(db *database.DB) chi.Router {
 			r.Put("/", UpdateJobHandler(db))
 			r.Delete("/", DeleteJobHandler(db))
 		})
+		r.Get("/jobs/{job_id}/history", GetJobHistoryHandler(db))
 	})
 
 	// Users routes

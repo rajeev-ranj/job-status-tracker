@@ -29,6 +29,12 @@ type User struct {
 	Role     string `json:"role"` // Role of the user
 }
 
-// job_history represents a job history.
+// JobHistory represents a record in the job_history table.
 type JobHistory struct {
+	ID          int       `json:"id"`
+	JobID       int       `json:"job_id"`
+	Status      string    `json:"status"`
+	Timestamp   time.Time `json:"timestamp"`
+	Description string    `json:"description"`
+	// any other relevant fields
 }
