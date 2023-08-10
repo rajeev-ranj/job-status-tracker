@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
 	"job-status-tracker/pkg/api"
@@ -31,11 +32,14 @@ func main() {
 
 	defer db.Close()
 
-	log.Println("Successfully connected to the database!")
+	// Create the router
+	router := chi.NewRouter()
 
-	// Create the router and set up middleware
-	router := api.Routes(db)
+	// Set up middleware
 	router.Use(middleware.Logger)
+
+	// Define the routes
+	router.Mount("/", api.Routes(db))
 
 	// Start the server
 	port := os.Getenv("PORT")

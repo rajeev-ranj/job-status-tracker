@@ -2,11 +2,11 @@ package api
 
 import (
 	"github.com/go-chi/chi"
-	"job-status-tracker/pkg/database" // Adjust the import path to match your project
+	"job-status-tracker/pkg/database"
 )
 
-// Routes creates and returns the API routes.
-func Routes(db *database.DB) *chi.Mux {
+// Routes defines the API routes
+func Routes(db *database.DB) chi.Router {
 	router := chi.NewRouter()
 
 	// Services routes
