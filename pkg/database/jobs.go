@@ -68,3 +68,53 @@ func (db *DB) DeleteJob(jobID int) error {
 	}
 	return nil
 }
+
+// GetJobsByServiceID retrieves all jobs for a service
+func (db *DB) GetJobsByServiceID(serviceID int) ([]*Job, error) {
+	query := `SELECT job_id, service_id, job_name, expected_completion_time, actual_completion_time, status, frequency FROM jobs WHERE service_id = $1`
+	rows, err := db.Query(query, serviceID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving jobs: %w", err)
+	}
+	defer rows.Close()
+
+	var jobs []*Job
+	for rows.Next() {
+		var job Job
+		if err := rows.Scan(&job.JobID, &job.ServiceID, &job.JobName, &job.ExpectedCompletionTime, &job.ActualCompletionTime, &job.Status, &job.Frequency); err != nil {
+			return nil, fmt.Errorf("error scanning job: %w", err)
+		}
+		jobs = append(jobs, &job)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating jobs: %w", err)
+	}
+
+	return jobs, nil
+}
+
+// GetJobHistory retrieves all job history for a job
+func (db *DB) GetJobHistory(jobID int) ([]*JobHistory, error) {
+	query := `SELECT job_history_id, job_id, status, start_time, end_time FROM job_history WHERE job_id = $1`
+	rows, err := db.Query(query, jobID)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving job history: %w", err)
+	}
+	defer rows.Close()
+
+	var jobHistory []*JobHistory
+	for rows.Next() {
+		var history JobHistory
+		if err := rows.Scan(&history.JobHistoryID, &history.JobID, &history.Status, &history.StartTime, &history.EndTime); err != nil {
+			return nil, fmt.Errorf("error scanning job history: %w", err)
+		}
+		jobHistory = append(jobHistory, &history)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating job history: %w", err)
+	}
+
+	return jobHistory, nil
+}

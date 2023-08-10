@@ -28,3 +28,7 @@ type User struct {
 	Email    string `json:"email"`
 	Role     string `json:"role"` // Role of the user
 }
+
+// job_history represents a job history.
+type JobHistory struct {
+}
