@@ -1,6 +1,9 @@
 package database
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 // Service represents a tracked service.
 type Service struct {
@@ -12,13 +15,13 @@ type Service struct {
 
 // Job represents a tracked job.
 type Job struct {
-	JobID                  int       `json:"job_id"`
-	ServiceID              int       `json:"service_id"`
-	JobName                string    `json:"job_name"`
-	ExpectedCompletionTime time.Time `json:"expected_completion_time"`
-	ActualCompletionTime   time.Time `json:"actual_completion_time"`
-	Status                 string    `json:"status"`
-	Frequency              string    `json:"frequency"`
+	JobID                  int          `json:"job_id"`
+	ServiceID              int          `json:"service_id"`
+	JobName                string       `json:"job_name"`
+	ExpectedCompletionTime time.Time    `json:"expected_completion_time"`
+	ActualCompletionTime   sql.NullTime `json:"actual_completion_time"`
+	Status                 string       `json:"status"`
+	Frequency              string       `json:"frequency"`
 }
 
 // User represents a user.
